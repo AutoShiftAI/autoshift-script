@@ -3,566 +3,626 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>AutoShift — Скрипт звонка</title>
+<title>AutoShift — Скрипт звонка v2</title>
 <style>
 :root{
   --bg:#050a06;--green:#00c853;--emerald:#1de9b6;
   --card:rgba(10,34,21,.55);--border:rgba(0,200,83,.15);
   --bh:rgba(0,200,83,.45);--white:#fff;
   --gray:#7a9a87;--gray2:#b0c4b8;
-  --red:#ff4d4d;--amber:#ffb300;
+  --red:#ff4d4d;--amber:#ffb300;--purple:#b39dff;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--white);
+html,body{min-height:100%;background:var(--bg);color:var(--white);
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   line-height:1.5;overflow-x:hidden}
 
-/* ── LAYOUT ── */
-.app{min-height:100vh;display:flex;flex-direction:column}
-
-/* ── HEADER ── */
+/* HEADER */
 header{position:sticky;top:0;z-index:100;
-  background:rgba(5,10,6,.92);backdrop-filter:blur(20px);
+  background:rgba(5,10,6,.95);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
-  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:900;letter-spacing:-.3px}
+  padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:8px;font-size:.95rem;font-weight:900;letter-spacing:-.3px;flex-shrink:0}
 .brand em{font-style:normal;color:var(--green)}
-.dot-live{width:8px;height:8px;background:var(--green);border-radius:50%;
+.dot-live{width:7px;height:7px;background:var(--green);border-radius:50%;
   animation:blink 2s ease-in-out infinite;flex-shrink:0}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.progress-wrap{flex:1;max-width:200px}
-.progress-label{font-size:.7rem;color:var(--gray);margin-bottom:4px;text-align:right}
-.progress-bar{height:3px;background:rgba(0,200,83,.15);border-radius:2px;overflow:hidden}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--emerald));
+.progress-wrap{flex:1;max-width:180px}
+.prog-label{font-size:.68rem;color:var(--gray);margin-bottom:3px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog-bar{height:3px;background:rgba(0,200,83,.12);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--emerald));
   border-radius:2px;transition:width .4s ease}
-.btn-obj{background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);
-  color:#ff7070;font-size:.75rem;font-weight:700;padding:6px 12px;
+.btn-obj-hdr{background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);
+  color:#ff8080;font-size:.72rem;font-weight:700;padding:6px 11px;
   border-radius:100px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
-.btn-obj:hover{background:rgba(255,77,77,.2);border-color:rgba(255,77,77,.5)}
+.btn-obj-hdr:hover{background:rgba(255,77,77,.2)}
 
-/* ── MAIN ── */
-main{flex:1;padding:16px;max-width:680px;margin:0 auto;width:100%}
+/* MAIN */
+main{padding:16px;max-width:680px;margin:0 auto;width:100%;padding-bottom:40px}
 
-/* ── SCREENS ── */
-.screen{display:none;animation:fadeIn .35s ease}
+/* SCREENS */
+.screen{display:none;animation:fadeIn .3s ease}
 .screen.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* ── SECTION TAG ── */
+/* TAGS */
 .stag{display:inline-flex;align-items:center;gap:6px;
   background:rgba(0,200,83,.07);border:1px solid rgba(0,200,83,.22);
-  color:var(--green);padding:4px 14px;border-radius:100px;
-  font-size:.7rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px}
+  color:var(--green);padding:4px 13px;border-radius:100px;
+  font-size:.68rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:12px}
 
-/* ── SCREEN TITLE ── */
-.screen-title{font-size:1.4rem;font-weight:900;letter-spacing:-.5px;margin-bottom:6px;line-height:1.2}
-.screen-title .gt{background:linear-gradient(135deg,#fff 0%,var(--green) 60%,var(--emerald) 100%);
+/* TITLES */
+.screen-title{font-size:1.35rem;font-weight:900;letter-spacing:-.5px;margin-bottom:5px;line-height:1.2}
+.gt{background:linear-gradient(135deg,#fff 0%,var(--green) 60%,var(--emerald) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.screen-sub{color:var(--gray2);font-size:.88rem;margin-bottom:20px;line-height:1.6}
+.screen-sub{color:var(--gray2);font-size:.85rem;margin-bottom:18px;line-height:1.6}
 
-/* ── SCRIPT BOX ── */
-.script-box{background:var(--card);border:1px solid var(--border);
+/* SCRIPT BOX */
+.sb{background:var(--card);border:1px solid var(--border);
   border-left:3px solid var(--green);border-radius:0 14px 14px 0;
-  padding:16px 18px;margin-bottom:14px;position:relative}
-.script-box .script-label{font-size:.65rem;font-weight:700;letter-spacing:1.2px;
-  text-transform:uppercase;color:var(--green);margin-bottom:8px}
-.script-box p{font-size:1rem;line-height:1.7;color:var(--white)}
-.script-box p em{font-style:normal;color:var(--green);font-weight:600}
-.script-box p strong{color:#fff;font-weight:700}
+  padding:14px 16px;margin-bottom:12px}
+.sb-label{font-size:.62rem;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--green);margin-bottom:7px}
+.sb p{font-size:.97rem;line-height:1.75;color:var(--white)}
+.sb p em{font-style:normal;color:var(--green);font-weight:600}
+.sb.amber{border-left-color:var(--amber)}
+.sb.amber .sb-label{color:var(--amber)}
+.sb.purple{border-left-color:var(--purple)}
+.sb.purple .sb-label{color:var(--purple)}
+.sb.teal{border-left-color:var(--emerald)}
+.sb.teal .sb-label{color:var(--emerald)}
 
-/* ── TIP BOX ── */
-.tip-box{background:rgba(255,179,0,.05);border:1px solid rgba(255,179,0,.2);
-  border-radius:12px;padding:12px 16px;margin-bottom:16px;
-  display:flex;gap:10px;align-items:flex-start}
-.tip-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
-.tip-text{font-size:.83rem;color:#ffd54f;line-height:1.6}
+/* TIP */
+.tip{background:rgba(255,179,0,.05);border:1px solid rgba(255,179,0,.18);
+  border-radius:11px;padding:11px 14px;margin-bottom:12px;
+  display:flex;gap:9px;align-items:flex-start;font-size:.82rem;color:#ffd54f;line-height:1.6}
 
-/* ── INFO BOX ── */
-.info-box{background:rgba(0,200,83,.04);border:1px solid rgba(0,200,83,.15);
-  border-radius:12px;padding:12px 16px;margin-bottom:16px;
-  display:flex;gap:10px;align-items:flex-start}
-.info-text{font-size:.83rem;color:var(--gray2);line-height:1.6}
+/* INFO */
+.info{background:rgba(0,200,83,.04);border:1px solid rgba(0,200,83,.13);
+  border-radius:11px;padding:11px 14px;margin-bottom:12px;
+  font-size:.82rem;color:var(--gray2);line-height:1.6}
+.info strong{color:var(--white)}
 
-/* ── QUESTION CARD ── */
-.q-card{background:var(--card);border:1px solid var(--border);
-  border-radius:16px;padding:18px;margin-bottom:12px;transition:border-color .3s}
-.q-card.active-q{border-color:var(--bh);box-shadow:0 0 20px rgba(0,200,83,.12)}
-.q-num{display:inline-flex;align-items:center;justify-content:center;
-  width:28px;height:28px;background:linear-gradient(135deg,var(--green),var(--emerald));
-  color:#000;font-size:.78rem;font-weight:900;border-radius:50%;margin-bottom:10px;flex-shrink:0}
-.q-theme{font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-  color:var(--green);margin-bottom:8px}
-.q-text{font-size:.97rem;line-height:1.7;color:var(--white);margin-bottom:10px;font-style:italic}
-.q-tip{font-size:.78rem;color:var(--gray2);line-height:1.5;
-  padding-top:10px;border-top:1px solid rgba(0,200,83,.1)}
+/* DIVIDER */
+.div{height:1px;background:var(--border);margin:16px 0}
 
-/* ── OBJECTION CARD ── */
-.obj-card{background:var(--card);border:1px solid rgba(255,77,77,.18);
-  border-radius:14px;overflow:hidden;margin-bottom:10px}
-.obj-q{padding:14px 18px;font-weight:600;font-size:.93rem;cursor:pointer;
-  display:flex;justify-content:space-between;align-items:center;
-  background:rgba(255,77,77,.04);transition:background .2s;user-select:none}
-.obj-q:hover{background:rgba(255,77,77,.08)}
-.obj-q .arr{color:var(--red);font-size:.75rem;transition:transform .3s;flex-shrink:0}
-.obj-card.open .arr{transform:rotate(180deg)}
-.obj-a{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.16,1,.3,1)}
-.obj-card.open .obj-a{max-height:300px}
-.obj-a-inner{padding:0 18px 16px;color:var(--gray2);font-size:.88rem;line-height:1.7}
-.obj-a-inner .reply{background:rgba(0,200,83,.06);border:1px solid rgba(0,200,83,.18);
-  border-left:3px solid var(--green);border-radius:0 10px 10px 0;
-  padding:10px 14px;margin-top:8px;color:var(--white);font-size:.9rem;line-height:1.6;font-style:italic}
+/* QUESTION CARD */
+.qc{background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:15px;margin-bottom:10px}
+.qc-num{display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;background:linear-gradient(135deg,var(--green),var(--emerald));
+  color:#000;font-size:.75rem;font-weight:900;border-radius:50%;flex-shrink:0}
+.qc-theme{font-size:.66rem;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--green);margin-bottom:7px}
+.qc-text{font-size:.95rem;line-height:1.7;color:var(--white);font-style:italic;margin-bottom:8px}
+.qc-tip{font-size:.77rem;color:var(--gray2);line-height:1.5;
+  padding-top:8px;border-top:1px solid rgba(0,200,83,.1)}
 
-/* ── BUTTONS ── */
-.btn-row{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+/* CALCULATOR */
+.calc{background:linear-gradient(135deg,rgba(0,200,83,.07),rgba(29,233,182,.04));
+  border:1px solid rgba(0,200,83,.25);border-radius:16px;padding:18px;margin-bottom:14px}
+.calc-title{font-size:.78rem;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--green);margin-bottom:14px}
+.calc-row{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.calc-row label{font-size:.8rem;color:var(--gray2)}
+.calc-row input[type=number]{background:rgba(0,0,0,.4);border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;color:var(--white);font-size:1rem;
+  width:100%;outline:none;-moz-appearance:textfield}
+.calc-row input[type=number]::-webkit-outer-spin-button,
+.calc-row input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.calc-row input[type=number]:focus{border-color:var(--green)}
+.calc-slider-row{display:flex;align-items:center;gap:12px}
+.calc-slider-row input[type=range]{flex:1;accent-color:var(--green)}
+.calc-slider-val{font-size:.9rem;font-weight:700;color:var(--green);min-width:36px;text-align:right}
+.calc-result{background:rgba(0,0,0,.35);border:1px solid rgba(0,200,83,.2);
+  border-radius:12px;padding:14px;margin-top:4px}
+.calc-result-row{display:flex;justify-content:space-between;align-items:center;
+  padding:5px 0;border-bottom:1px solid rgba(0,200,83,.08);font-size:.88rem}
+.calc-result-row:last-child{border-bottom:none;padding-top:10px;margin-top:4px}
+.calc-result-row span:first-child{color:var(--gray2)}
+.calc-result-row span:last-child{font-weight:700;color:var(--white)}
+.calc-result-row.big span:last-child{color:var(--green);font-size:1.15rem}
+.calc-phrase{margin-top:12px;font-size:.87rem;color:var(--white);
+  background:rgba(0,200,83,.06);border-left:3px solid var(--green);
+  padding:10px 14px;border-radius:0 10px 10px 0;line-height:1.7;font-style:italic}
+
+/* RESULT BADGE */
+.rbadge{display:inline-flex;align-items:center;gap:6px;
+  padding:4px 13px;border-radius:100px;font-size:.75rem;font-weight:700;margin-bottom:14px}
+.rb-win{background:rgba(0,200,83,.1);border:1px solid rgba(0,200,83,.3);color:var(--green)}
+.rb-fail{background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);color:#ff7070}
+
+/* BUTTONS */
+.btn-row{display:flex;flex-direction:column;gap:9px;margin-top:18px}
 .btn-row.row{flex-direction:row;flex-wrap:wrap}
-.btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;
+.btn-p{display:flex;align-items:center;justify-content:center;gap:8px;
   background:linear-gradient(135deg,var(--green),var(--emerald));
-  color:#000;font-weight:700;font-size:.97rem;padding:15px 24px;
+  color:#000;font-weight:700;font-size:.95rem;padding:14px 22px;
   border-radius:100px;border:none;cursor:pointer;transition:all .3s;
-  box-shadow:0 0 24px rgba(0,200,83,.3);text-align:center}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,200,83,.5)}
-.btn-secondary{display:flex;align-items:center;justify-content:center;gap:8px;
-  background:transparent;color:var(--white);font-weight:600;font-size:.93rem;
-  padding:13px 24px;border-radius:100px;border:1px solid rgba(255,255,255,.2);
-  cursor:pointer;transition:all .3s;text-align:center}
-.btn-secondary:hover{border-color:var(--green);color:var(--green);transform:translateY(-2px)}
-.btn-danger{display:flex;align-items:center;justify-content:center;gap:8px;
-  background:rgba(255,77,77,.08);color:#ff7070;font-weight:600;font-size:.88rem;
-  padding:11px 20px;border-radius:100px;border:1px solid rgba(255,77,77,.25);
-  cursor:pointer;transition:all .2s;text-align:center}
-.btn-danger:hover{background:rgba(255,77,77,.16);border-color:rgba(255,77,77,.45)}
-.btn-back{background:none;border:none;color:var(--gray);font-size:.82rem;
-  cursor:pointer;padding:8px 0;display:inline-flex;align-items:center;gap:6px;
-  transition:color .2s;margin-top:6px}
+  box-shadow:0 0 22px rgba(0,200,83,.28);text-align:center;width:100%}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 0 38px rgba(0,200,83,.48)}
+.btn-s{display:flex;align-items:center;justify-content:center;gap:8px;
+  background:transparent;color:var(--white);font-weight:600;font-size:.9rem;
+  padding:12px 22px;border-radius:100px;border:1px solid rgba(255,255,255,.18);
+  cursor:pointer;transition:all .3s;text-align:center;width:100%}
+.btn-s:hover{border-color:var(--green);color:var(--green)}
+.btn-d{display:flex;align-items:center;justify-content:center;gap:8px;
+  background:rgba(255,77,77,.07);color:#ff8080;font-weight:600;font-size:.87rem;
+  padding:10px 18px;border-radius:100px;border:1px solid rgba(255,77,77,.22);
+  cursor:pointer;transition:all .2s;text-align:center;width:100%}
+.btn-d:hover{background:rgba(255,77,77,.15)}
+.btn-back{background:none;border:none;color:var(--gray);font-size:.8rem;
+  cursor:pointer;padding:6px 0;display:inline-flex;align-items:center;gap:5px;
+  transition:color .2s;margin-bottom:14px}
 .btn-back:hover{color:var(--white)}
 
-/* ── DIVIDER ── */
-.divider{height:1px;background:var(--border);margin:20px 0}
-
-/* ── RESULT TAG ── */
-.result-tag{display:inline-flex;align-items:center;gap:6px;
-  padding:5px 14px;border-radius:100px;font-size:.78rem;font-weight:700;margin-bottom:16px}
-.result-win{background:rgba(0,200,83,.1);border:1px solid rgba(0,200,83,.3);color:var(--green)}
-.result-fail{background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);color:#ff7070}
-
-/* ── CHEATSHEET ── */
-.cheat-row{display:flex;gap:8px;margin-bottom:8px;font-size:.85rem}
-.cheat-key{color:var(--green);font-weight:700;flex-shrink:0;min-width:24px}
-
-/* ── OBJECTION PANEL ── */
+/* OBJECTION PANEL */
 #obj-panel{display:none;position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,.8);backdrop-filter:blur(12px);overflow-y:auto}
+  background:rgba(0,0,0,.85);backdrop-filter:blur(14px);overflow-y:auto}
 #obj-panel.open{display:block;animation:fadeIn .25s ease}
-.obj-panel-inner{max-width:680px;margin:0 auto;padding:16px;padding-bottom:40px}
-.obj-panel-header{display:flex;align-items:center;justify-content:space-between;
-  padding:14px 0;margin-bottom:8px}
-.obj-panel-title{font-size:1.1rem;font-weight:900;letter-spacing:-.3px}
-.btn-close{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-  color:var(--white);font-size:.85rem;padding:7px 16px;border-radius:100px;
+.op-inner{max-width:680px;margin:0 auto;padding:16px 16px 48px}
+.op-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 0;margin-bottom:6px}
+.op-title{font-size:1.05rem;font-weight:900}
+.btn-close{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+  color:var(--white);font-size:.82rem;padding:6px 14px;border-radius:100px;
   cursor:pointer;transition:all .2s}
-.btn-close:hover{background:rgba(255,255,255,.15)}
+.btn-close:hover{background:rgba(255,255,255,.14)}
 
-/* ── MOBILE ── */
+/* OBJ CARDS */
+.oc{background:var(--card);border:1px solid rgba(255,77,77,.16);
+  border-radius:14px;overflow:hidden;margin-bottom:10px}
+.oc-q{padding:13px 16px;font-weight:600;font-size:.9rem;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(255,77,77,.04);transition:background .2s;user-select:none;gap:12px}
+.oc-q:hover{background:rgba(255,77,77,.08)}
+.oc-q .arr{color:var(--red);font-size:.72rem;transition:transform .3s;flex-shrink:0}
+.oc.open .arr{transform:rotate(180deg)}
+.oc-a{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.16,1,.3,1)}
+.oc.open .oc-a{max-height:400px}
+.oc-ai{padding:0 16px 14px;color:var(--gray2);font-size:.85rem;line-height:1.7}
+.reply{background:rgba(0,200,83,.05);border:1px solid rgba(0,200,83,.16);
+  border-left:3px solid var(--green);border-radius:0 10px 10px 0;
+  padding:10px 13px;margin-top:8px;color:var(--white);font-size:.88rem;
+  line-height:1.65;font-style:italic}
+.reply.amber{border-left-color:var(--amber)}
+
+/* GOLDEN BOX */
+.gold{background:linear-gradient(135deg,rgba(255,179,0,.06),rgba(255,179,0,.02));
+  border:1px solid rgba(255,179,0,.25);border-radius:14px;padding:16px;margin-bottom:14px}
+.gold-title{font-size:.68rem;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--amber);margin-bottom:10px}
+.gold p{font-size:.92rem;line-height:1.75;color:var(--white);font-style:italic}
+.gold p em{font-style:normal;color:var(--amber);font-weight:600}
+
 @media(max-width:420px){
-  .screen-title{font-size:1.25rem}
-  .btn-primary,.btn-secondary{font-size:.9rem;padding:13px 18px}
+  .screen-title{font-size:1.2rem}
+  .btn-p,.btn-s{font-size:.88rem;padding:12px 16px}
 }
 </style>
 </head>
 <body>
-<div class="app">
 
-<!-- ══ HEADER ══════════════════════════════════════════════════════ -->
+<!-- HEADER -->
 <header>
   <div class="brand"><span class="dot-live"></span>Auto<em>Shift</em></div>
   <div class="progress-wrap">
-    <div class="progress-label" id="prog-label">Старт</div>
-    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:5%"></div></div>
+    <div class="prog-label" id="prog-label">Старт</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:4%"></div></div>
   </div>
-  <button class="btn-obj" onclick="openObj()">⚡ Возражение</button>
+  <button class="btn-obj-hdr" onclick="openObj()">⚡ Возражение</button>
 </header>
 
-<!-- ══ MAIN ════════════════════════════════════════════════════════ -->
 <main>
 
-<!-- ─── SCREEN 0: START ─────────────────────────────────────────── -->
+<!-- ══ S0: СТАРТ ══ -->
 <div class="screen active" id="s0">
   <div class="stag">📞 Звонок</div>
-  <h1 class="screen-title">Холодный звонок<br><span class="gt">AutoShift</span></h1>
-  <p class="screen-sub">Приветствие — выясняем кто на линии</p>
+  <h1 class="screen-title">Холодный звонок<br><span class="gt">AutoShift v2</span></h1>
+  <p class="screen-sub">Звоним — выясняем кто отвечает за деньги, а не за должность</p>
 
-  <div class="script-box">
-    <div class="script-label">Говорим</div>
-    <p>— Здравствуйте! Меня зовут <em>[имя]</em>, компания AutoShift. Подскажите, я правильно понимаю — вы директор или владелец?</p>
+  <div class="sb">
+    <div class="sb-label">Говорим</div>
+    <p>— Добрый день! Подскажите, кто у вас отвечает за входящие заявки и запись клиентов — собственник или управляющий?</p>
   </div>
 
-  <div class="tip-box">
-    <div class="tip-icon">💡</div>
-    <div class="tip-text">Назови своё имя уверенно, без «вас беспокоит». Вопрос задай сразу — не давай время положить трубку.</div>
+  <div class="tip">💡 Не спрашиваем «директора». Спрашиваем зону ответственности — это звучит как деловой вопрос, а не «хочу пробиться наверх».</div>
+
+  <div class="sb amber">
+    <div class="sb-label">Если спрашивают «по какому вопросу?»</div>
+    <p>— По обработке заявок. Мы помогаем бизнесам не терять обращения из WhatsApp, Telegram, 2ГИС и звонков — быстрый ответ, запись, напоминания, отчёт по источникам. Нужно 60 секунд с тем, кто отвечает за загрузку и выручку. Кто у вас этим занимается?</p>
   </div>
 
   <div class="btn-row">
-    <button class="btn-primary" onclick="go('s2')">✅ Да, директор / владелец</button>
-    <button class="btn-secondary" onclick="go('s1')">🚫 Нет, не директор</button>
+    <button class="btn-p" onclick="go('s2')">✅ Перевели — директор/владелец на линии</button>
+    <button class="btn-s" onclick="go('s1')">🔁 Не перевели — надо выйти на директора</button>
   </div>
 </div>
 
-<!-- ─── SCREEN 1: НЕ ДИРЕКТОР ───────────────────────────────────── -->
+<!-- ══ S1: НЕ ПЕРЕВЕЛИ ══ -->
 <div class="screen" id="s1">
   <button class="btn-back" onclick="go('s0')">← Назад</button>
   <div class="stag">🔁 Выход на директора</div>
-  <h1 class="screen-title">Говорит <span class="gt">не директор</span></h1>
-  <p class="screen-sub">Цель — получить имя директора и перевод или договориться о времени</p>
+  <h1 class="screen-title">Не перевели —<br><span class="gt">идём обходом</span></h1>
 
-  <div class="script-box">
-    <div class="script-label">Говорим</div>
-    <p>— Подскажите, как лучше связаться с директором или владельцем? Мы проводим короткий опрос среди бизнесов Тольятти по автоматизации на базе ИИ — это буквально 5 минут, и по итогу я расскажу что конкретно можно ускорить у вас.</p>
+  <div class="sb">
+    <div class="sb-label">Если не переводят</div>
+    <p>— Понял. Тогда подскажите, как зовут руководителя и когда его реально поймать на 2 минуты — до обеда или ближе к вечеру?</p>
   </div>
 
-  <div class="tip-box">
-    <div class="tip-icon">💡</div>
-    <div class="tip-text">«Опрос» — не продажа. Это снижает защиту. Узнай имя директора до перевода — потом будет проще.</div>
-  </div>
+  <div class="tip">💡 Узнай имя директора до следующего звонка — «Здравствуйте, [имя]» сразу меняет тон разговора.</div>
 
-  <div class="script-box" style="border-left-color:var(--emerald)">
-    <div class="script-label" style="color:var(--emerald)">Если спрашивают «по какому вопросу»</div>
-    <p>— Мы помогаем бизнесам автоматизировать рутину с помощью ИИ — запись, обработка заявок, отчёты. Провожу короткий опрос, чтобы понять насколько это актуально для вас.</p>
+  <div class="sb teal">
+    <div class="sb-label">Если давят «по какому вопросу»</div>
+    <p>— Мы находим у бизнесов места, где уже пришедшие заявки не доходят до записи или оплаты. Нужно буквально 60 секунд с владельцем — я сам скажу, есть ли у вас эта проблема или нет.</p>
   </div>
 
   <div class="btn-row">
-    <button class="btn-primary" onclick="go('s2')">✅ Перевели на директора</button>
-    <button class="btn-secondary" onclick="go('s1b')">📅 Сказали перезвонить</button>
-    <button class="btn-danger" onclick="go('s_end_fail')">❌ Отказали</button>
+    <button class="btn-p" onclick="go('s1b')">📅 Договорились о времени звонка</button>
+    <button class="btn-d" onclick="go('s_fail')">❌ Отказали наотрез</button>
   </div>
 </div>
 
-<!-- ─── SCREEN 1B: ПЕРЕЗВОНИТЬ ──────────────────────────────────── -->
+<!-- ══ S1B: ЗАПИСАЛИ ВРЕМЯ ══ -->
 <div class="screen" id="s1b">
   <button class="btn-back" onclick="go('s1')">← Назад</button>
-  <div class="stag">📅 Договорились</div>
-  <h1 class="screen-title">Договариваемся<br><span class="gt">о времени</span></h1>
+  <div class="stag">📅 Запись</div>
+  <h1 class="screen-title">Фиксируем<br><span class="gt">следующий контакт</span></h1>
 
-  <div class="script-box">
-    <div class="script-label">Говорим</div>
-    <p>— Отлично! Когда директору будет удобно — утром или во второй половине дня? <em>[Ждём ответ]</em> Хорошо, тогда я запишу — <em>[день, время]</em>, звоню на этот номер?</p>
+  <div class="sb">
+    <div class="sb-label">Говорим</div>
+    <p>— Отлично! Тогда я позвоню <em>[день, время]</em>. Чтобы разговор был предметным — передайте <em>[имя директора]</em>, что речь про обработку входящих заявок и скорость ответа клиентам. До встречи!</p>
   </div>
 
-  <div class="tip-box">
-    <div class="tip-icon">💡</div>
-    <div class="tip-text">Альтернативный вопрос («утром или после обеда?») работает лучше чем «когда удобно» — меньше шанс получить «никогда».</div>
-  </div>
-
-  <div class="script-box" style="border-left-color:var(--amber)">
-    <div class="script-label" style="color:var(--amber)">Спроси имя директора</div>
-    <p>— Кстати, как зовут директора, чтобы сразу обратиться по имени?</p>
-  </div>
+  <div class="info"><strong>Записать прямо сейчас:</strong> имя директора · дата и время перезвона · название компании · откуда идут заявки (если спросили)</div>
 
   <div class="btn-row">
-    <button class="btn-primary" onclick="go('s_sched')">✅ Записал время</button>
+    <button class="btn-p" onclick="go('s0')">📞 Следующий звонок</button>
   </div>
 </div>
 
-<!-- ─── SCREEN 2: ДИРЕКТОР — ИНТРО ──────────────────────────────── -->
+<!-- ══ S2: ДИРЕКТОР — ИНТРО ══ -->
 <div class="screen" id="s2">
   <button class="btn-back" onclick="go('s0')">← Назад</button>
   <div class="stag">👤 Директор на линии</div>
-  <h1 class="screen-title">Интро —<br><span class="gt">без воды</span></h1>
-  <p class="screen-sub">Короткое представление. Не говорим «мы делаем AutoShift» — говорим что мы решаем</p>
+  <h1 class="screen-title">Интро —<br><span class="gt">без «купите ИИ»</span></h1>
+  <p class="screen-sub">Позиционируем себя как диагноста, а не продавца</p>
 
-  <div class="script-box">
-    <div class="script-label">Говорим</div>
-    <p>— <em>[Имя]</em>, добрый день! Меня зовут <em>[твоё имя]</em>. Мы помогаем бизнесам в Тольятти убирать ручную работу с помощью ИИ — запись, заявки, отчёты — всё что сейчас делается руками и отнимает время. Я провожу короткий опрос — займу буквально 3 минуты, можем?</p>
+  <div class="sb">
+    <div class="sb-label">Говорим</div>
+    <p>— <em>[Имя]</em>, добрый день. Я <em>[твоё имя]</em>, AutoShift. Сразу коротко: я не с презентацией «купите ИИ». Мы находим у бизнесов места, где уже пришедшие заявки не доходят до записи или оплаты — из-за долгого ответа, ручной переписки, забытых напоминаний. Задам 3 вопроса за минуту и сам скажу, есть ли у вас эта проблема или нет. Ок?</p>
   </div>
 
-  <div class="tip-box">
-    <div class="tip-icon">💡</div>
-    <div class="tip-text">Не жди разрешения слишком долго. Сказал «можем?» — сделай паузу 1 секунду и сразу переходи к первому вопросу. Большинство скажут «ну давайте».</div>
+  <div class="tip">💡 После «Ок?» — пауза 1 секунду и сразу в вопросы. 90% скажут «ну давайте» просто потому что ты уже обещал сам закрыть тему если не подходишь.</div>
+
+  <div class="sb amber">
+    <div class="sb-label">Если холодно / «чем занимаетесь»</div>
+    <p>— Если у вас все заявки отвечаются быстро, фиксируются и вы видите отчёт по источникам — я честно скажу что мы вам сейчас не нужны. Один вопрос: сколько входящих обращений у вас в неделю примерно?</p>
   </div>
 
   <div class="btn-row">
-    <button class="btn-primary" onclick="go('s3')">→ Перейти к вопросам</button>
-    <button class="btn-danger" onclick="openObj()">⚡ Возражение / «не интересно»</button>
+    <button class="btn-p" onclick="go('s3')">→ Перейти к диагностике</button>
+    <button class="btn-d" onclick="openObj()">⚡ Возражение уже здесь</button>
   </div>
 </div>
 
-<!-- ─── SCREEN 3: ВОПРОСЫ-УБИЙЦЫ ────────────────────────────────── -->
+<!-- ══ S3: ДИАГНОСТИКА ══ -->
 <div class="screen" id="s3">
   <button class="btn-back" onclick="go('s2')">← Назад</button>
-  <div class="stag">🎯 Выявление боли</div>
-  <h1 class="screen-title">4 вопроса<br><span class="gt">которые работают</span></h1>
-  <p class="screen-sub">Задавай по одному. После каждого — молчи и слушай. Записывай ответы мысленно — они станут основой питча.</p>
+  <div class="stag">🎯 Диагностика денег</div>
+  <h1 class="screen-title">6 вопросов —<br><span class="gt">достаём цифры</span></h1>
+  <p class="screen-sub">Слушай и записывай. Ответы лягут в калькулятор утечки.</p>
 
-  <div class="q-card active-q">
-    <div style="display:flex;align-items:flex-start;gap:12px">
-      <div class="q-num">1</div>
-      <div>
-        <div class="q-theme">AI Admin — потеря клиентов</div>
-        <div class="q-text">«Как часто бывает, что клиент написал — а ему ответили только через пару часов или вообще на следующий день? И куда, как вы думаете, он уходит в это время?»</div>
-        <div class="q-tip">💡 Пауза после второго вопроса — убийственная. Директор сам считает потери вслух.</div>
+  <div class="qc">
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div class="qc-num">1</div>
+      <div style="flex:1">
+        <div class="qc-theme">Объём</div>
+        <div class="qc-text">«Примерно сколько входящих обращений у вас в неделю: до 20, от 20 до 50, или больше 50?»</div>
+        <div class="qc-tip">Простой выбор — легко отвечать. Устанавливает масштаб.</div>
       </div>
     </div>
   </div>
 
-  <div class="q-card">
-    <div style="display:flex;align-items:flex-start;gap:12px">
-      <div class="q-num">2</div>
-      <div>
-        <div class="q-theme">Время на рутину</div>
-        <div class="q-text">«Если честно — сколько процентов вашего рабочего дня уходит на вещи, которые вы уже делали тысячу раз и которые можно было бы делать вообще без вас?»</div>
-        <div class="q-tip">💡 Слово «честно» снимает защиту. Директор назовёт 40–70% — и сам удивится.</div>
+  <div class="qc">
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div class="qc-num">2</div>
+      <div style="flex:1">
+        <div class="qc-theme">Каналы</div>
+        <div class="qc-text">«Откуда чаще приходят: звонки, WhatsApp, Telegram, сайт, 2ГИС, Авито, соцсети?»</div>
+        <div class="qc-tip">Показывает где хаос — если каналов много, контроль точно теряется.</div>
       </div>
     </div>
   </div>
 
-  <div class="q-card">
-    <div style="display:flex;align-items:flex-start;gap:12px">
-      <div class="q-num">3</div>
-      <div>
-        <div class="q-theme">Аналитика и контроль</div>
-        <div class="q-text">«Когда вы хотите понять как бизнес отработал за месяц — вы открываете одну страницу и видите всю картину, или приходится собирать по кусочкам из разных мест?»</div>
-        <div class="q-tip">💡 99% скажут «по кусочкам». Мягко вскрывает хаос без обвинений.</div>
+  <div class="qc">
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div class="qc-num">3</div>
+      <div style="flex:1">
+        <div class="qc-theme">Скорость в рабочее время</div>
+        <div class="qc-text">«В рабочее время клиенту отвечают обычно за минуты или бывает что висит часами?»</div>
+        <div class="qc-tip">«Бывает» = уже потери. Большинство скажут «бывает».</div>
       </div>
     </div>
   </div>
 
-  <div class="q-card">
-    <div style="display:flex;align-items:flex-start;gap:12px">
-      <div class="q-num" style="background:rgba(255,179,0,.2);color:var(--amber)">4</div>
-      <div>
-        <div class="q-theme" style="color:var(--amber)">Масштаб и свобода ⚠️ осторожно</div>
-        <div class="q-text">«Что конкретно нужно изменить в бизнесе, чтобы вы могли уехать на две недели — и всё продолжало работать без вас?»</div>
-        <div class="q-tip">💡 Самый мощный, но ощущается как «вы плохо управляете». Используй если уже хороший контакт и директор открыт. Его ответ = список что автоматизировать.</div>
+  <div class="qc">
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div class="qc-num">4</div>
+      <div style="flex:1">
+        <div class="qc-theme">Вечер и выходные</div>
+        <div class="qc-text">«После закрытия и в выходные заявки кто-то обрабатывает или они ждут утра?»</div>
+        <div class="qc-tip">Почти всегда «ждут утра» — это самая жирная дыра.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc">
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div class="qc-num">5</div>
+      <div style="flex:1">
+        <div class="qc-theme">Средний чек</div>
+        <div class="qc-text">«Средний чек одной записи примерно какой — до 5 тысяч, 5–15, 15 плюс? Диапазоном можно.»</div>
+        <div class="qc-tip">Нужно для расчёта. Без этого «дорого/дёшево» — гадание.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qc">
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <div class="qc-num" style="background:rgba(179,157,255,.2);color:var(--purple)">6</div>
+      <div style="flex:1">
+        <div class="qc-theme" style="color:var(--purple)">Контроль и отчётность</div>
+        <div class="qc-text">«Вы сейчас видите в одном месте путь "источник → заявка → запись → оплата" или приходится собирать по кусочкам?»</div>
+        <div class="qc-tip">99% скажут «по кусочкам» — открывает тему дашборда и контроля.</div>
       </div>
     </div>
   </div>
 
   <div class="btn-row">
-    <button class="btn-primary" onclick="go('s4')">→ Перейти к питчу</button>
+    <button class="btn-p" onclick="go('s4')">→ Считаем утечку</button>
   </div>
 </div>
 
-<!-- ─── SCREEN 4: ПИТЧ ────────────────────────────────────────────── -->
+<!-- ══ S4: КАЛЬКУЛЯТОР ══ -->
 <div class="screen" id="s4">
   <button class="btn-back" onclick="go('s3')">← Назад</button>
+  <div class="stag">💰 Считаем вслух</div>
+  <h1 class="screen-title">Калькулятор<br><span class="gt">утечки денег</span></h1>
+  <p class="screen-sub">Вбей цифры из разговора — зачитай результат директору вслух</p>
+
+  <div class="calc">
+    <div class="calc-title">Введи данные из диагностики</div>
+
+    <div class="calc-row">
+      <label>Заявок в неделю</label>
+      <input type="number" id="c-leads" value="30" min="1" oninput="calcLeak()">
+    </div>
+
+    <div class="calc-row">
+      <label>Процент теряемых заявок: <span id="c-pct-lbl" style="color:var(--green);font-weight:700">15%</span></label>
+      <div class="calc-slider-row">
+        <input type="range" id="c-pct" min="5" max="40" value="15" step="5" oninput="calcLeak()">
+        <span class="calc-slider-val" id="c-pct-v">15%</span>
+      </div>
+    </div>
+
+    <div class="calc-row">
+      <label>Средний чек (₽)</label>
+      <input type="number" id="c-check" value="8000" min="100" step="500" oninput="calcLeak()">
+    </div>
+
+    <div class="calc-result" id="calc-result">
+      <div class="calc-result-row"><span>Потерянных клиентов в неделю</span><span id="r-week-clients">—</span></div>
+      <div class="calc-result-row"><span>Потерянных клиентов в месяц</span><span id="r-month-clients">—</span></div>
+      <div class="calc-result-row"><span>Утечка в неделю</span><span id="r-week-money">—</span></div>
+      <div class="calc-result-row big"><span>Утечка в месяц</span><span id="r-month-money">—</span></div>
+    </div>
+
+    <div class="calc-phrase" id="calc-phrase">Введи цифры выше ↑</div>
+  </div>
+
+  <div class="tip">💡 После того как зачитал цифры — молчи 3 секунды. Пусть директор сам осознает сумму. Потом говори питч.</div>
+
+  <div class="btn-row">
+    <button class="btn-p" onclick="go('s5')">→ Перейти к питчу</button>
+  </div>
+</div>
+
+<!-- ══ S5: ПИТЧ ══ -->
+<div class="screen" id="s5">
+  <button class="btn-back" onclick="go('s4')">← Назад</button>
   <div class="stag">🚀 Питч</div>
-  <h1 class="screen-title">Питч на основе<br><span class="gt">его слов</span></h1>
-  <p class="screen-sub">Используй то что он сказал — не шаблонный текст. Шаблон ниже — адаптируй под ответы.</p>
+  <h1 class="screen-title">Питч от<br><span class="gt">его слов</span></h1>
+  <p class="screen-sub">Не продаём ИИ. Закрываем дыру которую только что посчитали.</p>
 
-  <div class="script-box">
-    <div class="script-label">Говорим</div>
-    <p>— <em>[Имя]</em>, вот смотрите — вы сами только что сказали что <em>[его слова — потери клиентов / рутина / хаос в цифрах]</em>. Именно это мы и закрываем.</p>
+  <div class="sb">
+    <div class="sb-label">Говорим</div>
+    <p>— <em>[Имя]</em>, вопрос не «нужен ли ИИ». Вопрос в том, есть ли у вас утечка больше стоимости её закрытия. По вашим цифрам — есть. Вот что мы делаем:</p>
   </div>
 
-  <div class="script-box" style="border-left-color:var(--emerald)">
-    <div class="script-label" style="color:var(--emerald)">Если говорил про пропущенные заявки</div>
-    <p>— Мы внедряем AI Admin — это ИИ-менеджер, который отвечает клиентам мгновенно, в любое время суток, квалифицирует заявку и передаёт вам уже готового клиента. Вы не теряете ни одного обращения — даже ночью.</p>
+  <div class="sb teal">
+    <div class="sb-label">Если говорил про пропущенные заявки / вечер</div>
+    <p>— Мы ставим AI Admin: он принимает обращение из любого канала, отвечает мгновенно, квалифицирует, записывает или передаёт живому человеку. Ни одна заявка не ждёт утра. Администратор перестаёт отвечать на «сколько стоит» и «когда записаться» — занимается только теми кто уже готов.</p>
   </div>
 
-  <div class="script-box" style="border-left-color:#7c4dff">
-    <div class="script-label" style="color:#b39dff">Если говорил про рутину / время</div>
-    <p>— Мы забираем всю эту ручную работу — записи, напоминания, отчёты, переписки — и автоматизируем. Ваши сотрудники делают только то, что реально требует человека.</p>
+  <div class="sb purple">
+    <div class="sb-label">Если говорил про хаос в каналах / ручную работу</div>
+    <p>— Мы сводим все каналы в одно место: WhatsApp, Telegram, звонки, сайт — всё видно в одном окне. Никаких забытых переписок, никакого ручного переноса в таблицы.</p>
   </div>
 
-  <div class="script-box" style="border-left-color:var(--amber)">
-    <div class="script-label" style="color:var(--amber)">Если говорил про аналитику</div>
-    <p>— Мы настраиваем дашборд — вы в одном месте видите всё: сколько заявок, откуда клиенты, где узкое горлышко. Не нужно собирать по кусочкам.</p>
+  <div class="sb amber">
+    <div class="sb-label">Если говорил про отчётность «по кусочкам»</div>
+    <p>— Добавляем дашборд: источник → заявка → запись → оплата. Вы в любой момент видите откуда пришли деньги и где осыпалась воронка. Не надо собирать из голов сотрудников.</p>
   </div>
 
-  <div class="divider"></div>
-
-  <div class="script-box">
-    <div class="script-label">Закрываем вопросом</div>
-    <p>— Для вас это было бы актуально? <em>[Пауза]</em></p>
+  <div class="sb">
+    <div class="sb-label">Важно добавить</div>
+    <p>— Мы не внедряем всё сразу. Выбираем одну дыру где быстрее всего отбить деньги — и начинаем с неё. Остальное подключаем по мере роста.</p>
   </div>
+
+  <div class="div"></div>
 
   <div class="btn-row row">
-    <button class="btn-primary" onclick="go('s5a')" style="flex:1">📅 На встречу</button>
-    <button class="btn-secondary" onclick="go('s5b')" style="flex:1">💬 В Telegram</button>
+    <button class="btn-p" onclick="go('s6a')" style="flex:1">📅 На встречу / демо</button>
+    <button class="btn-s" onclick="go('s6b')" style="flex:1">💬 В Telegram</button>
   </div>
   <div class="btn-row">
-    <button class="btn-danger" onclick="openObj()">⚡ Возражение</button>
+    <button class="btn-d" onclick="openObj()">⚡ Возражение</button>
   </div>
 </div>
 
-<!-- ─── SCREEN 5A: ЗАКРЫТИЕ — ВСТРЕЧА ───────────────────────────── -->
-<div class="screen" id="s5a">
-  <button class="btn-back" onclick="go('s4')">← Назад</button>
+<!-- ══ S6A: ЗАКРЫТИЕ — ВСТРЕЧА ══ -->
+<div class="screen" id="s6a">
+  <button class="btn-back" onclick="go('s5')">← Назад</button>
   <div class="stag">📅 Закрытие</div>
-  <h1 class="screen-title">Закрываем<br><span class="gt">на встречу</span></h1>
+  <h1 class="screen-title">Закрываем<br><span class="gt">на демо</span></h1>
 
-  <div class="script-box">
-    <div class="script-label">Говорим</div>
-    <p>— Тогда давайте так: я подготовлю короткий разбор конкретно под ваш бизнес и покажу живьём как это работает. Это займёт 20–30 минут. Вам удобнее в первой половине недели или ближе к пятнице?</p>
+  <div class="sb">
+    <div class="sb-label">Говорим</div>
+    <p>— Предлагаю не гадать и не гонять КП. Давайте за 20 минут: я возьму ваш сценарий заявки, покажу живьём как AI Admin ведёт клиента от первого сообщения до записи — и посчитаем сколько клиентов система должна вернуть чтобы окупиться. Если цифры не сходятся — сами закрываем тему. Вам удобнее <em>завтра в 11:30</em> или <em>послезавтра ближе к 17:00</em>?</p>
   </div>
 
-  <div class="tip-box">
-    <div class="tip-icon">💡</div>
-    <div class="tip-text">Альтернативный вопрос — не «хотите встретиться?», а «когда удобнее». Уже предполагает согласие.</div>
-  </div>
+  <div class="tip">💡 «Если цифры не сходятся — сами закрываем» разоружает. Директор расслабляется — нет давления. Это и есть причина почему он соглашается.</div>
 
-  <div class="script-box" style="border-left-color:var(--emerald)">
-    <div class="script-label" style="color:var(--emerald)">Если соглашается</div>
-    <p>— Отлично! Тогда записываю — <em>[день, время, место]</em>. Я пришлю вам в Telegram короткое сообщение с подтверждением — как вас найти?</p>
+  <div class="sb teal">
+    <div class="sb-label">Если соглашается</div>
+    <p>— Отлично! Фиксирую <em>[день, время]</em>. Напишу вам в Telegram с подтверждением — как вас найти?</p>
   </div>
 
   <div class="btn-row">
-    <button class="btn-primary" onclick="go('s_win')">🎉 Встреча назначена!</button>
-    <button class="btn-secondary" onclick="go('s5b')">💬 Лучше в Telegram</button>
-    <button class="btn-danger" onclick="openObj()">⚡ Возражение</button>
+    <button class="btn-p" onclick="go('s_win')">🎉 Встреча назначена!</button>
+    <button class="btn-s" onclick="go('s6b')">💬 Лучше в Telegram</button>
+    <button class="btn-d" onclick="openObj()">⚡ Возражение</button>
   </div>
 </div>
 
-<!-- ─── SCREEN 5B: ЗАКРЫТИЕ — TELEGRAM ─────────────────────────── -->
-<div class="screen" id="s5b">
-  <button class="btn-back" onclick="go('s4')">← Назад</button>
+<!-- ══ S6B: ЗАКРЫТИЕ — TELEGRAM ══ -->
+<div class="screen" id="s6b">
+  <button class="btn-back" onclick="go('s5')">← Назад</button>
   <div class="stag">💬 Закрытие</div>
-  <h1 class="screen-title">Закрываем<br><span class="gt">в Telegram</span></h1>
+  <h1 class="screen-title">Telegram —<br><span class="gt">но с обязательством</span></h1>
+  <p class="screen-sub">Telegram не кладбище сделок — только если там есть конкретный следующий шаг</p>
 
-  <div class="script-box">
-    <div class="script-label">Говорим</div>
-    <p>— Хорошо! Тогда я отправлю вам в Telegram короткий разбор — как это выглядит конкретно для детейлинга, с примерами. Там удобнее смотреть и задать вопросы без спешки. Как вас найти в Telegram?</p>
+  <div class="sb">
+    <div class="sb-label">Говорим</div>
+    <p>— Хорошо! Я пришлю не презентацию — а расчёт по вашим двум цифрам и пример диалога AI Admin под вашу услугу. Чтобы не слать мусор — подтвердите: заявок в неделю у вас <em>[цифра из калькулятора]</em>, средний чек <em>[цифра]</em>? <em>[Ждём подтверждение]</em> Отлично. Куда написать?</p>
   </div>
 
-  <div class="tip-box">
-    <div class="tip-icon">💡</div>
-    <div class="tip-text">Telegram — более тёплая среда. Оттуда проще дожать до встречи и показать демо. После того как отправил — дай 24 часа, потом делай follow-up.</div>
-  </div>
+  <div class="tip">💡 После отправки — назначь следующий контакт: «Напишу сегодня, созвонимся на 5 минут завтра в 12 — удобно?» Без назначенного шага Telegram = тишина.</div>
 
-  <div class="script-box" style="border-left-color:var(--emerald)">
-    <div class="script-label" style="color:var(--emerald)">Если даёт контакт</div>
-    <p>— Отлично, <em>[имя]</em>! Напишу сегодня. Там же скину пример как AI Admin работал у похожего бизнеса — посмотрите в спокойной обстановке.</p>
+  <div class="sb amber">
+    <div class="sb-label">После отправки — фиксируй следующий шаг</div>
+    <p>— <em>[Имя]</em>, отправил. Там 2 экрана — расчёт и пример диалога. Давайте созвонимся завтра в <em>[время]</em> на 5 минут — посмотрите и скажете что думаете?</p>
   </div>
 
   <div class="btn-row">
-    <button class="btn-primary" onclick="go('s_win')">✅ Дал Telegram</button>
-    <button class="btn-danger" onclick="openObj()">⚡ Возражение</button>
+    <button class="btn-p" onclick="go('s_win')">✅ Дал Telegram + назначили созвон</button>
+    <button class="btn-d" onclick="openObj()">⚡ Возражение</button>
   </div>
 </div>
 
-<!-- ─── SCREEN: WIN ───────────────────────────────────────────────── -->
+<!-- ══ WIN ══ -->
 <div class="screen" id="s_win">
-  <div class="result-tag result-win">🎉 Звонок успешный</div>
-  <h1 class="screen-title"><span class="gt">Отличная работа!</span></h1>
-  <p class="screen-sub">Зафиксируй результат пока не забыл</p>
-
-  <div class="info-box">
-    <div class="tip-icon">📋</div>
-    <div class="info-text"><strong style="color:#fff">Что записать прямо сейчас:</strong><br>
-    — Имя директора<br>
-    — Главная боль которую назвал<br>
-    — Договорённость (встреча / Telegram)<br>
-    — Дата и время следующего контакта</div>
+  <div class="rbadge rb-win">🎉 Звонок — успех</div>
+  <h1 class="screen-title"><span class="gt">Отлично сработано!</span></h1>
+  <div class="info" style="margin-top:14px">
+    <strong>Записать прямо сейчас:</strong><br>
+    — Имя директора и компания<br>
+    — Главная боль из диагностики<br>
+    — Цифры: заявки в неделю + средний чек<br>
+    — Договорённость и точное время следующего контакта
   </div>
-
-  <div class="script-box" style="border-left-color:var(--emerald)">
-    <div class="script-label" style="color:var(--emerald)">Финальная фраза перед отбоем</div>
-    <p>— <em>[Имя]</em>, отлично! Тогда до <em>[день/время]</em>. Если что-то понадобится раньше — вы знаете как меня найти. Хорошего дня!</p>
+  <div class="sb teal" style="margin-top:4px">
+    <div class="sb-label">Финальная фраза</div>
+    <p>— <em>[Имя]</em>, отлично! Тогда до <em>[день/время]</em>. Если что-то понадобится раньше — вы знаете где меня найти. Хорошего дня!</p>
   </div>
-
-  <div class="btn-row">
-    <button class="btn-primary" onclick="go('s0')">📞 Следующий звонок</button>
+  <div class="btn-row" style="margin-top:18px">
+    <button class="btn-p" onclick="go('s0')">📞 Следующий звонок</button>
   </div>
 </div>
 
-<!-- ─── SCREEN: ЗАПИСЬ ВРЕМЕНИ ─────────────────────────────────── -->
-<div class="screen" id="s_sched">
-  <div class="result-tag result-win">📅 Запись на звонок</div>
-  <h1 class="screen-title"><span class="gt">Договорились!</span></h1>
-
-  <div class="info-box">
-    <div class="tip-icon">📋</div>
-    <div class="info-text"><strong style="color:#fff">Что зафиксировать:</strong><br>
-    — Имя директора<br>
-    — Дата и время перезвона<br>
-    — Номер / имя компании</div>
+<!-- ══ FAIL ══ -->
+<div class="screen" id="s_fail">
+  <div class="rbadge rb-fail">❌ Отказ</div>
+  <h1 class="screen-title">Отказали —<br><span class="gt">последний шанс</span></h1>
+  <div class="sb amber" style="margin-top:14px">
+    <div class="sb-label">Последняя попытка</div>
+    <p>— Понял, не вопрос. Только чтобы не возвращаться зря: у вас входящие заявки получают ответ до 5 минут, включая вечер и выходные?</p>
   </div>
-
-  <div class="script-box">
-    <div class="script-label">Перед тем как положить трубку</div>
-    <p>— <em>[Имя]</em>, отлично! Тогда я позвоню вам <em>[день, время]</em>. Кстати, если захотите посмотреть что мы делаем заранее — можете написать мне в Telegram: <em>@AutoAlexsandr</em>. Хорошего дня!</p>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn-primary" onclick="go('s0')">📞 Следующий звонок</button>
+  <div class="tip">💡 Если «ну не всегда» — ты снова в разговоре. Если «да, всегда» — отпускай, это не твой клиент сейчас.</div>
+  <div class="info">Запиши дату — перезвони через 3 недели. Ситуация в бизнесе меняется.</div>
+  <div class="btn-row" style="margin-top:18px">
+    <button class="btn-p" onclick="go('s0')">📞 Следующий звонок</button>
   </div>
 </div>
 
-<!-- ─── SCREEN: FAIL ─────────────────────────────────────────────── -->
-<div class="screen" id="s_end_fail">
-  <div class="result-tag result-fail">❌ Отказ</div>
-  <h1 class="screen-title">Не получилось —<br><span class="gt">и это нормально</span></h1>
+</main>
 
-  <div class="info-box">
-    <div class="tip-icon">📋</div>
-    <div class="info-text">Зафикси причину отказа. Попробуй перезвонить через 2–3 недели — ситуация в бизнесе меняется.</div>
-  </div>
-
-  <div class="script-box" style="border-left-color:var(--amber)">
-    <div class="script-label" style="color:var(--amber)">Последняя попытка</div>
-    <p>— Понял вас. Скажите, а в принципе — есть что-то в бизнесе что вас сейчас сильнее всего напрягает по времени? Просто интересно. <em>[Если ответил — есть зацепка]</em></p>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn-primary" onclick="go('s0')">📞 Следующий звонок</button>
-  </div>
-</div>
-
-</main><!-- /main -->
-</div><!-- /app -->
-
-<!-- ══ ВОЗРАЖЕНИЯ ПАНЕЛЬ ══════════════════════════════════════════ -->
+<!-- ══ ПАНЕЛЬ ВОЗРАЖЕНИЙ ══ -->
 <div id="obj-panel">
-  <div class="obj-panel-inner">
-    <div class="obj-panel-header">
-      <div class="obj-panel-title">⚡ Отработка возражений</div>
+  <div class="op-inner">
+    <div class="op-hdr">
+      <div class="op-title">⚡ Отработка возражений</div>
       <button class="btn-close" onclick="closeObj()">✕ Закрыть</button>
     </div>
 
-    <div class="obj-card">
-      <div class="obj-q" onclick="tog(this)">«Нас всё устраивает / не интересует» <span class="arr">▼</span></div>
-      <div class="obj-a"><div class="obj-a-inner">
-        Не спорь. Уточни — возможно он просто не понял о чём ты.
-        <div class="reply">— Понял! Скажите, а если бы вы могли убрать хотя бы одну вещь которая сейчас отнимает больше всего времени — что бы это было? Просто интересно.</div>
+    <div class="oc">
+      <div class="oc-q" onclick="tog(this)">«Не интересно / нам всё подходит» <span class="arr">▼</span></div>
+      <div class="oc-a"><div class="oc-ai">
+        Не уговаривай. Диагностируй — пусть сам скажет что всё хорошо.
+        <div class="reply">— Понял, закрываю. Только чтобы не возвращаться зря: у вас все входящие получают ответ до 5 минут, включая вечер и выходные?</div>
+        <div class="reply amber">Если «ну не всегда»: — Вот это как раз та зона. Не предлагаю встречу вслепую — давайте 60 секунд посчитаем, сколько это стоит в месяц.</div>
       </div></div>
     </div>
 
-    <div class="obj-card">
-      <div class="obj-q" onclick="tog(this)">«Дорого / нет бюджета» <span class="arr">▼</span></div>
-      <div class="obj-a"><div class="obj-a-inner">
-        Переведи в ROI — сколько он теряет сейчас без автоматизации.
-        <div class="reply">— Понимаю. Скажите, а если один потерянный клиент — это условно 3–5 тысяч рублей, и вы теряете их каждый день пока не отвечаете быстро — это сколько в месяц? Вот на это и смотрим.</div>
+    <div class="oc">
+      <div class="oc-q" onclick="tog(this)">«Дорого» <span class="arr">▼</span></div>
+      <div class="oc-a"><div class="oc-ai">
+        Цену ещё не называли — значит вопрос не в цене, а в непонятной окупаемости.
+        <div class="reply">— Мы цену ещё не обсуждали, значит вопрос не в сумме, а в том непонятно окупится ли. Справедливо. Давайте считать: сколько стоит один записанный клиент и сколько заявок в неделю приходит?</div>
+        <div class="reply amber">Если не даёт цифры: — Тогда любое «дорого/дёшево» — гадание. Я могу быть дорогим если возвращаю 1 клиента, и дешёвым если возвращаю 10.</div>
       </div></div>
     </div>
 
-    <div class="obj-card">
-      <div class="obj-q" onclick="tog(this)">«Нет времени / занят» <span class="arr">▼</span></div>
-      <div class="obj-a"><div class="obj-a-inner">
-        Признай и сразу предложи минимальный шаг.
-        <div class="reply">— Абсолютно понимаю, именно поэтому я и звоню — чтобы найти время сэкономить. Давайте так: я скину вам в Telegram один короткий пример — посмотрите когда будет удобно. Как вас найти?</div>
+    <div class="oc">
+      <div class="oc-q" onclick="tog(this)">«Нет времени» <span class="arr">▼</span></div>
+      <div class="oc-a"><div class="oc-ai">
+        Признай и сразу дай альтернативу — два конкретных времени, не «когда удобно».
+        <div class="reply">— Согласен, именно поэтому звоню — чтобы найти где сэкономить время. Сегодня в 17:20 на 7 минут или завтра в 10:40? Не презентация — только посчитаем утечку по вашим цифрам.</div>
       </div></div>
     </div>
 
-    <div class="obj-card">
-      <div class="obj-q" onclick="tog(this)">«Уже работаем с кем-то» <span class="arr">▼</span></div>
-      <div class="obj-a"><div class="obj-a-inner">
-        Не атакуй конкурента. Уточни что именно у них есть.
-        <div class="reply">— Хорошо! Интересно, а что именно автоматизировано — запись, ответы клиентам, отчёты? <em>[Слушаешь]</em> Понял. У нас есть несколько вещей которых скорее всего нет — давайте я скину коротко, просто для сравнения?</div>
+    <div class="oc">
+      <div class="oc-q" onclick="tog(this)">«У нас есть администратор» <span class="arr">▼</span></div>
+      <div class="oc-a"><div class="oc-ai">
+        Мы не вместо человека. Мы снимаем рутину с человека.
+        <div class="reply">— Супер, значит есть кто знает клиентов и процессы. Мы не вместо администратора. Вопрос: он сейчас продаёт и доводит до записи — или большую часть дня отвечает на «сколько стоит» и «когда записаться»?</div>
       </div></div>
     </div>
 
-    <div class="obj-card">
-      <div class="obj-q" onclick="tog(this)">«Пришлите КП / информацию» <span class="arr">▼</span></div>
-      <div class="obj-a"><div class="obj-a-inner">
-        КП в холодную — мусорка. Договорись на контакт в Telegram.
-        <div class="reply">— Конечно! Только стандартное КП будет без привязки к вашей ситуации — толку мало. Давайте так: я отправлю вам в Telegram короткий разбор именно под ваш бизнес — там и примеры, и цифры. Как вас найти?</div>
+    <div class="oc">
+      <div class="oc-q" onclick="tog(this)">«Уже есть CRM / бот» <span class="arr">▼</span></div>
+      <div class="oc-a"><div class="oc-ai">
+        Уточни что именно делает их система — хранит или обрабатывает.
+        <div class="reply">— Отлично. Тогда вопрос: он просто хранит заявки — или реально ведёт клиента от первого сообщения до записи, напоминает, возвращает молчунов и показывает какой источник дал деньги?</div>
+        <div class="reply amber">Если «хранит»: — Тогда это не конкурент. Это склад. Мы про обработку и доведение до записи.</div>
       </div></div>
     </div>
 
-    <div class="obj-card">
-      <div class="obj-q" onclick="tog(this)">«Подумаю / перезвоните позже» <span class="arr">▼</span></div>
-      <div class="obj-a"><div class="obj-a-inner">
-        Зафиксируй конкретное время — «позже» обычно = никогда.
-        <div class="reply">— Хорошо, понял! Когда лучше перезвонить — на этой неделе или на следующей? <em>[Берёшь конкретный день/время]</em> Договорились, <em>[имя]</em> — тогда до <em>[дата]</em>!</div>
+    <div class="oc">
+      <div class="oc-q" onclick="tog(this)">«Пришлите КП» <span class="arr">▼</span></div>
+      <div class="oc-a"><div class="oc-ai">
+        КП без цифр — мусор. Запроси две цифры и сделай его персональным.
+        <div class="reply">— Пришлю. Только стандартное КП не ответит на главный вопрос: окупится или нет. Дайте два ориентира — заявок в неделю и средний чек — и я пришлю не КП, а расчёт плюс пример сценария под ваш бизнес.</div>
+      </div></div>
+    </div>
+
+    <div class="oc">
+      <div class="oc-q" onclick="tog(this)">«Подумаю» <span class="arr">▼</span></div>
+      <div class="oc-a"><div class="oc-ai">
+        «Подумаю» = не хватает цифр, доверия или понятного следующего шага. Спроси что именно.
+        <div class="reply">— Да, нормально. Обычно «подумать» значит не хватает цифр, доверия или понимания следующего шага. Что из трёх сейчас больше мешает?</div>
+        <div class="reply amber">Если «надо посмотреть»: — Тогда логично не покупать, а посмотреть на вашем сценарии. 20 минут, без обязательств. Если не увидите денег — расходимся.</div>
       </div></div>
     </div>
 
@@ -570,46 +630,53 @@ main{flex:1;padding:16px;max-width:680px;margin:0 auto;width:100%}
 </div>
 
 <script>
-const screens={
-  s0:{label:'Старт',prog:5},
-  s1:{label:'Выход на директора',prog:20},
-  s1b:{label:'Записываем время',prog:30},
-  s2:{label:'Директор — интро',prog:35},
-  s3:{label:'Вопросы',prog:55},
-  s4:{label:'Питч',prog:75},
-  s5a:{label:'Закрытие — встреча',prog:88},
-  s5b:{label:'Закрытие — Telegram',prog:88},
-  s_win:{label:'Звонок успешен!',prog:100},
-  s_sched:{label:'Записались',prog:100},
-  s_end_fail:{label:'Отказ',prog:100}
+// ── НАВИГАЦИЯ ──────────────────────────────────────────────────────
+const SCREENS={
+  s0:{l:'Старт',p:4},s1:{l:'Выход на директора',p:18},
+  s1b:{l:'Записали время',p:28},s2:{l:'Интро',p:35},
+  s3:{l:'Диагностика',p:52},s4:{l:'Считаем утечку',p:68},
+  s5:{l:'Питч',p:78},s6a:{l:'Закрытие — демо',p:90},
+  s6b:{l:'Закрытие — Telegram',p:90},
+  s_win:{l:'Успех!',p:100},s_fail:{l:'Отказ',p:100}
 };
-
 function go(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const sc=screens[id]||{label:'',prog:50};
-  document.getElementById('prog-label').textContent=sc.label;
-  document.getElementById('prog-fill').style.width=sc.prog+'%';
+  const sc=SCREENS[id]||{l:'',p:50};
+  document.getElementById('prog-label').textContent=sc.l;
+  document.getElementById('prog-fill').style.width=sc.p+'%';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function openObj(){
-  document.getElementById('obj-panel').classList.add('open');
-  document.body.style.overflow='hidden';
+// ── КАЛЬКУЛЯТОР УТЕЧКИ ─────────────────────────────────────────────
+function fmt(n){return n.toLocaleString('ru-RU')+'₽'}
+function calcLeak(){
+  const leads=parseFloat(document.getElementById('c-leads').value)||0;
+  const pct=parseFloat(document.getElementById('c-pct').value)||15;
+  const check=parseFloat(document.getElementById('c-check').value)||0;
+  document.getElementById('c-pct-v').textContent=pct+'%';
+  document.getElementById('c-pct-lbl').textContent=pct+'%';
+  const lostWeek=Math.round(leads*(pct/100)*10)/10;
+  const lostMonth=Math.round(lostWeek*4.3*10)/10;
+  const moneyWeek=Math.round(lostWeek*check);
+  const moneyMonth=Math.round(lostMonth*check);
+  document.getElementById('r-week-clients').textContent='~'+lostWeek+' чел.';
+  document.getElementById('r-month-clients').textContent='~'+Math.round(lostMonth)+' чел.';
+  document.getElementById('r-week-money').textContent=fmt(moneyWeek);
+  document.getElementById('r-month-money').textContent=fmt(moneyMonth);
+  const phrase=`— Смотрите, грубо. Если у вас ${leads} обращений в неделю и хотя бы ${pct}% не доходят до записи — это ${lostWeek} клиента в неделю. При чеке ${fmt(check)} это ${fmt(moneyWeek)} в неделю, около ${fmt(moneyMonth)} в месяц. Я не утверждаю что у вас именно так — но порядок цифр такой. Поэтому вопрос не «нужен ли ИИ», а есть ли утечка больше стоимости её закрытия.`;
+  document.getElementById('calc-phrase').textContent=phrase;
 }
-function closeObj(){
-  document.getElementById('obj-panel').classList.remove('open');
-  document.body.style.overflow='';
-}
-document.getElementById('obj-panel').addEventListener('click',function(e){
-  if(e.target===this)closeObj();
-});
+calcLeak();
 
+// ── ВОЗРАЖЕНИЯ ─────────────────────────────────────────────────────
+function openObj(){document.getElementById('obj-panel').classList.add('open');document.body.style.overflow='hidden'}
+function closeObj(){document.getElementById('obj-panel').classList.remove('open');document.body.style.overflow=''}
+document.getElementById('obj-panel').addEventListener('click',function(e){if(e.target===this)closeObj()});
 function tog(el){
-  const card=el.parentElement;
-  const wasOpen=card.classList.contains('open');
-  document.querySelectorAll('#obj-panel .obj-card').forEach(c=>c.classList.remove('open'));
-  if(!wasOpen)card.classList.add('open');
+  const c=el.parentElement,was=c.classList.contains('open');
+  document.querySelectorAll('.oc').forEach(x=>x.classList.remove('open'));
+  if(!was)c.classList.add('open');
 }
 </script>
 </body>
